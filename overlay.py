@@ -51,11 +51,18 @@ class ArrowCursorTextField(NSTextField):
     def cursorUpdate_(self, event):
         NSCursor.arrowCursor().set()
 
-    def fieldEditor_forObject_(self, control, object):
-        if not hasattr(self, '_custom_field_editor'):
-            self._custom_field_editor = ArrowCursorTextView.alloc().initWithFrame_(NSMakeRect(0, 0, 0, 0))
-            self._custom_field_editor.setFieldEditor_(True)
-        return self._custom_field_editor
+    def mouseDown_(self, event):
+        from AppKit import NSApp
+        NSApp.activateIgnoringOtherApps_(True)
+        if self.window():
+            self.window().makeKeyAndOrderFront_(None)
+            self.window().makeFirstResponder_(self)
+        objc.super(ArrowCursorTextField, self).mouseDown_(event)
+
+    def becomeFirstResponder(self):
+        from AppKit import NSApp
+        NSApp.activateIgnoringOtherApps_(True)
+        return objc.super(ArrowCursorTextField, self).becomeFirstResponder()
 
 class ArrowCursorVisualEffectView(NSVisualEffectView):
     def resetCursorRects(self):
@@ -67,6 +74,13 @@ class ArrowCursorVisualEffectView(NSVisualEffectView):
 
     def cursorUpdate_(self, event):
         NSCursor.arrowCursor().set()
+
+    def mouseDown_(self, event):
+        from AppKit import NSApp
+        NSApp.activateIgnoringOtherApps_(True)
+        if self.window():
+            self.window().makeKeyAndOrderFront_(None)
+        objc.super(ArrowCursorVisualEffectView, self).mouseDown_(event)
 
 class OverlayWindow(NSWindow):
     def canBecomeKeyWindow(self):
@@ -86,15 +100,11 @@ class OverlayWindow(NSWindow):
     def cursorUpdate_(self, event):
         NSCursor.arrowCursor().set()
 
-    def fieldEditor_forObject_(self, client, object):
-        if hasattr(self, 'input_field') and client == self.input_field:
-            if not hasattr(self, '_custom_field_editor'):
-                self._custom_field_editor = ArrowCursorTextView.alloc().initWithFrame_(NSMakeRect(0, 0, 0, 0))
-                self._custom_field_editor.setFieldEditor_(True)
-                self._custom_field_editor.setEditable_(True)
-                self._custom_field_editor.setSelectable_(True)
-            return self._custom_field_editor
-        return None
+    def mouseDown_(self, event):
+        from AppKit import NSApp
+        NSApp.activateIgnoringOtherApps_(True)
+        self.makeKeyAndOrderFront_(None)
+        objc.super(OverlayWindow, self).mouseDown_(event)
 
     @classmethod
     def create(cls):
