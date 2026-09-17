@@ -80,7 +80,18 @@ class Overlay < Formula
   end
 
   def install
-    virtualenv_install_with_resources
+    venv = virtualenv_create(libexec, "python3.11")
+    resources.each do |r|
+      if r.name == "pynput"
+        r.stage do
+          inreplace "setup.py", "SETUP_PACKAGES = [", "SETUP_PACKAGES = [] #"
+          venv.pip_install Pathname.pwd
+        end
+      else
+        venv.pip_install r
+      end
+    end
+    venv.pip_install buildpath
   end
 
   service do
