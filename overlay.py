@@ -23,22 +23,50 @@ from Quartz import (
     CGImageSourceCreateWithData, CGImageSourceCreateImageAtIndex, kCGImageSourceShouldCache
 )
 
+class ArrowCursorTextView(NSTextView):
+    def resetCursorRects(self):
+        self.discardCursorRects()
+        self.addCursorRect_cursor_(self.bounds(), NSCursor.arrowCursor())
+
+    def addCursorRect_cursor_(self, rect, cursor):
+        objc.super(ArrowCursorTextView, self).addCursorRect_cursor_(rect, NSCursor.arrowCursor())
+
+    def cursorUpdate_(self, event):
+        NSCursor.arrowCursor().set()
+
+    def mouseEntered_(self, event):
+        NSCursor.arrowCursor().set()
+
+    def mouseMoved_(self, event):
+        NSCursor.arrowCursor().set()
+
 class ArrowCursorTextField(NSTextField):
     def resetCursorRects(self):
         self.discardCursorRects()
         self.addCursorRect_cursor_(self.bounds(), NSCursor.arrowCursor())
 
+    def addCursorRect_cursor_(self, rect, cursor):
+        objc.super(ArrowCursorTextField, self).addCursorRect_cursor_(rect, NSCursor.arrowCursor())
+
+    def cursorUpdate_(self, event):
+        NSCursor.arrowCursor().set()
+
     def fieldEditor_forObject_(self, control, object):
-        # Return our custom text view as field editor
         if not hasattr(self, '_custom_field_editor'):
             self._custom_field_editor = ArrowCursorTextView.alloc().initWithFrame_(NSMakeRect(0, 0, 0, 0))
             self._custom_field_editor.setFieldEditor_(True)
         return self._custom_field_editor
 
-class ArrowCursorTextView(NSTextView):
+class ArrowCursorVisualEffectView(NSVisualEffectView):
     def resetCursorRects(self):
         self.discardCursorRects()
         self.addCursorRect_cursor_(self.bounds(), NSCursor.arrowCursor())
+
+    def addCursorRect_cursor_(self, rect, cursor):
+        objc.super(ArrowCursorVisualEffectView, self).addCursorRect_cursor_(rect, NSCursor.arrowCursor())
+
+    def cursorUpdate_(self, event):
+        NSCursor.arrowCursor().set()
 
 class OverlayWindow(NSWindow):
     def canBecomeKeyWindow(self):
@@ -49,10 +77,16 @@ class OverlayWindow(NSWindow):
     
     def resetCursorRects(self):
         self.discardCursorRects()
-        self.addCursorRect_cursor_(self.bounds(), NSCursor.arrowCursor())
+        if self.contentView():
+            self.addCursorRect_cursor_(self.contentView().bounds(), NSCursor.arrowCursor())
+
+    def addCursorRect_cursor_(self, rect, cursor):
+        objc.super(OverlayWindow, self).addCursorRect_cursor_(rect, NSCursor.arrowCursor())
+
+    def cursorUpdate_(self, event):
+        NSCursor.arrowCursor().set()
 
     def fieldEditor_forObject_(self, client, object):
-        # Override to use our custom field editor with arrow cursor
         if hasattr(self, 'input_field') and client == self.input_field:
             if not hasattr(self, '_custom_field_editor'):
                 self._custom_field_editor = ArrowCursorTextView.alloc().initWithFrame_(NSMakeRect(0, 0, 0, 0))
@@ -89,7 +123,7 @@ class OverlayWindow(NSWindow):
             window.setMovableByWindowBackground_(True)
             window.setHasShadow_(True)
             
-            window.effect_view = NSVisualEffectView.alloc().initWithFrame_(rect)
+            window.effect_view = ArrowCursorVisualEffectView.alloc().initWithFrame_(rect)
             window.effect_view.setMaterial_(11)
             window.effect_view.setBlendingMode_(NSVisualEffectBlendingModeBehindWindow)
             window.effect_view.setState_(1)
