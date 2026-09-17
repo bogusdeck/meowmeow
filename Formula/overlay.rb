@@ -2,7 +2,7 @@ class Overlay < Formula
   desc "Translucent macOS HUD overlay for instant coding challenge translation & AI assistance"
   homepage "https://github.com/bogusdeck/meowmeow"
   url "https://github.com/bogusdeck/meowmeow/archive/refs/tags/v1.0.0.tar.gz"
-  sha256 "b27485cd100119ce016f285274af87ce3b41bb1327eb9b5a0b874f3a6bb04bff"
+  sha256 "bb26c5b790f0be91bd41b23f9b6c55824150b997ba98f3e16a831010b84dacc3"
   license "MIT"
   depends_on :macos
   depends_on "python@3.11"
