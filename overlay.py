@@ -442,20 +442,56 @@ class OverlayWindow(NSWindow):
 
     def reduceSize(self):
         current_frame = self.frame()
+        screen = self.screen()
+        if not screen:
+            screen = NSWindow.screens().objectAtIndex_(0)
+            
+        step_height = 80.0
+        step_width = 60.0
+        
         min_height = 60.0
-        if current_frame.size.height > min_height:
-            new_height = min_height
-            y = current_frame.origin.y + current_frame.size.height - new_height
-            self.output_view.setString_("")
-            self.setFrame_display_(NSMakeRect(current_frame.origin.x, y, current_frame.size.width, new_height), True)
+        min_width = 300.0
+        
+        cur_w = current_frame.size.width
+        cur_h = current_frame.size.height
+        
+        new_w = max(min_width, cur_w - step_width)
+        new_h = max(min_height, cur_h - step_height)
+        
+        delta_w = cur_w - new_w
+        delta_h = cur_h - new_h
+        
+        new_x = current_frame.origin.x + (delta_w / 2.0)
+        new_y = current_frame.origin.y + delta_h
+        
+        self.setFrame_display_(NSMakeRect(new_x, new_y, new_w, new_h), True)
 
     def expandSize(self):
         current_frame = self.frame()
         screen = self.screen()
         if not screen:
             screen = NSWindow.screens().objectAtIndex_(0)
-        max_h = screen.visibleFrame().size.height * 0.8
-        target_height = min(350.0, max_h)
-        if current_frame.size.height < target_height:
-            y = current_frame.origin.y + current_frame.size.height - target_height
-            self.setFrame_display_(NSMakeRect(current_frame.origin.x, y, current_frame.size.width, target_height), True)
+            
+        screen_frame = screen.visibleFrame()
+        max_h = screen_frame.size.height * 0.9
+        max_w = screen_frame.size.width * 0.9
+        
+        step_height = 80.0
+        step_width = 60.0
+        
+        cur_w = current_frame.size.width
+        cur_h = current_frame.size.height
+        
+        new_w = min(max_w, cur_w + step_width)
+        new_h = min(max_h, cur_h + step_height)
+        
+        delta_w = new_w - cur_w
+        delta_h = new_h - cur_h
+        
+        new_x = current_frame.origin.x - (delta_w / 2.0)
+        new_y = current_frame.origin.y - delta_h
+        
+        new_x = max(screen_frame.origin.x, min(screen_frame.origin.x + screen_frame.size.width - new_w, new_x))
+        new_y = max(screen_frame.origin.y, min(screen_frame.origin.y + screen_frame.size.height - new_h, new_y))
+        
+        self.setFrame_display_(NSMakeRect(new_x, new_y, new_w, new_h), True)
