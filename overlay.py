@@ -408,3 +408,14 @@ class OverlayWindow(NSWindow):
             y = current_frame.origin.y + current_frame.size.height - new_height
             self.output_view.setString_("")
             self.setFrame_display_(NSMakeRect(current_frame.origin.x, y, current_frame.size.width, new_height), True)
+
+    def expandSize(self):
+        current_frame = self.frame()
+        screen = self.screen()
+        if not screen:
+            screen = NSWindow.screens().objectAtIndex_(0)
+        max_h = screen.visibleFrame().size.height * 0.8
+        target_height = min(350.0, max_h)
+        if current_frame.size.height < target_height:
+            y = current_frame.origin.y + current_frame.size.height - target_height
+            self.setFrame_display_(NSMakeRect(current_frame.origin.x, y, current_frame.size.width, target_height), True)

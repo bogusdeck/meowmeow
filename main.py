@@ -61,13 +61,15 @@ class AppDelegate(NSObject):
             on_move_right=self.on_move_right,
             on_move_up=self.on_move_up,
             on_move_down=self.on_move_down,
-            on_reduce_size=self.on_reduce_size
+            on_reduce_size=self.on_reduce_size,
+            on_expand_size=self.on_expand_size
         )
         self.hotkey_manager.start()
         print("QuickTranslate running.")
         print(" - Cmd+Ctrl+P (or Cmd+Ctrl+Fn+P): Translate clipboard")
         print(" - Cmd+Ctrl+Arrow (or Cmd+Ctrl+Fn+Arrow): Move window")
-        print(" - Cmd+Ctrl+M (or Cmd+Ctrl+Fn+M): Reduce overlay size")
+        print(" - Cmd+Ctrl+- (or Cmd+Ctrl+Fn+-): Reduce overlay size")
+        print(" - Cmd+Ctrl+= (or Cmd+Ctrl+Fn++): Maximize/Expand overlay size")
         print(" - Press Ctrl+C in terminal to stop.")
         sys.stdout.flush()
 
@@ -107,6 +109,22 @@ class AppDelegate(NSObject):
 
     def handleMoveDown(self):
         self.window.moveWindow_("down")
+
+    def on_reduce_size(self):
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+            objc.selector(self.handleReduceSize, signature=b'v@:'), None, False
+        )
+
+    def handleReduceSize(self):
+        self.window.reduceSize()
+
+    def on_expand_size(self):
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+            objc.selector(self.handleExpandSize, signature=b'v@:'), None, False
+        )
+
+    def handleExpandSize(self):
+        self.window.expandSize()
 
     def on_reduce_size(self):
         self.performSelectorOnMainThread_withObject_waitUntilDone_(
