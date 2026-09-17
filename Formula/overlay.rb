@@ -84,7 +84,9 @@ class Overlay < Formula
     resources.each do |r|
       if r.name == "pynput"
         r.stage do
-          inreplace "setup.py", "SETUP_PACKAGES = [", "SETUP_PACKAGES = [] #"
+          inreplace "setup.py" do |s|
+            s.gsub!(/SETUP_PACKAGES\s*=\s*\[[^\]]*\]/m, "SETUP_PACKAGES = []")
+          end
           venv.pip_install Pathname.pwd
         end
       else
