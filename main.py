@@ -25,8 +25,17 @@ logging.basicConfig(
 logger = logging.getLogger("MainApp")
 
 class AppDelegate(NSObject):
-    last_toggle_time = 0
-    toggle_cooldown = 0.3  # 300ms debounce
+    def init(self):
+        self = objc.super(AppDelegate, self).init()
+        if self is not None:
+            self.history = []
+            self.current_history_index = -1
+            self.last_toggle_time = 0
+            self.toggle_cooldown = 0.3
+            self.current_prompt = None
+            self.active_request_id = 0
+            self.request_lock = threading.Lock()
+        return self
     
     def setup_menu(self):
         from AppKit import NSMenu, NSMenuItem, NSEventModifierFlagControl, NSApp
@@ -51,6 +60,8 @@ class AppDelegate(NSObject):
         main_menu.addItem_(edit_menu_item)
 
     def setup(self):
+        self.history = []
+        self.current_history_index = -1
         self.setup_menu()
         self.window = OverlayWindow.create()
         self.window.app_delegate = self
@@ -64,11 +75,14 @@ class AppDelegate(NSObject):
             on_reduce_size=self.on_reduce_size,
             on_expand_size=self.on_expand_size,
             on_toggle_overlay=self.on_toggle_overlay,
-            on_instant_agy=self.on_instant_agy
+            on_instant_agy=self.on_instant_agy,
+            on_next_card=self.on_next_card,
+            on_prev_card=self.on_prev_card
         )
         self.hotkey_manager.start()
         print("QuickTranslate running.")
         print(" - Cmd+Ctrl+P (or Cmd+Ctrl+Fn+P): Translate clipboard")
+        print(" - Cmd+Ctrl+> / Cmd+Ctrl+<: Next / Previous response card")
         print(" - Cmd+Ctrl+I (or Cmd+Ctrl+Fn+I): Accelerate with Antigravity (agy)")
         print(" - Cmd+Ctrl+H (or Cmd+Ctrl+Fn+H): Toggle hide/show overlay")
         print(" - Cmd+Ctrl+Arrow (or Cmd+Ctrl+Fn+Arrow): Move window")
@@ -80,6 +94,47 @@ class AppDelegate(NSObject):
     current_prompt = None
     active_request_id = 0
     request_lock = threading.Lock()
+    
+    history = []
+    current_history_index = -1
+
+    def updateCardDisplay(self):
+        if not self.history:
+            return
+        total = len(self.history)
+        idx = max(0, min(total - 1, self.current_history_index))
+        self.current_history_index = idx
+        res = self.history[idx]
+        badge = f"[{idx + 1}/{total}]"
+        self.window.showText_withCounter_(res, badge)
+
+    def on_next_card(self):
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+            objc.selector(self.handleNextCard, signature=b'v@:'), None, False
+        )
+
+    def handleNextCard(self):
+        if self.history and self.current_history_index < len(self.history) - 1:
+            self.current_history_index += 1
+            self.updateCardDisplay()
+
+    def on_prev_card(self):
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+            objc.selector(self.handlePrevCard, signature=b'v@:'), None, False
+        )
+
+    def handlePrevCard(self):
+        if self.history and self.current_history_index > 0:
+            self.current_history_index -= 1
+            self.updateCardDisplay()
+
+    def updateUIWithResult_(self, result):
+        if result and not result.startswith("OCR failed") and not result.startswith("Screenshot failed") and not result.startswith("Clipboard is empty"):
+            self.history.append(result)
+            self.current_history_index = len(self.history) - 1
+            self.updateCardDisplay()
+        else:
+            self.window.showText_(result)
 
     def start_request(self, prompt_text):
         with self.request_lock:

@@ -189,6 +189,21 @@ class OverlayWindow(NSWindow):
             window.input_field.setAutoresizingMask_(NSViewWidthSizable | NSViewMinYMargin)
             window.effect_view.addSubview_(window.input_field)
 
+            # Session Card Counter Badge (e.g. [1/2])
+            counter_w = 48.0
+            counter_x = input_w - counter_w - 4.0
+            window.counter_label = ArrowCursorTextField.alloc().initWithFrame_(NSMakeRect(counter_x, 3, counter_w, 24))
+            window.counter_label.setEditable_(False)
+            window.counter_label.setSelectable_(False)
+            window.counter_label.setBordered_(False)
+            window.counter_label.setDrawsBackground_(False)
+            window.counter_label.setTextColor_(NSColor.colorWithWhite_alpha_(1.0, 0.6))
+            window.counter_label.setFont_(NSFont.systemFontOfSize_weight_(12.0, 0.4))
+            window.counter_label.setAlignment_(1)
+            window.counter_label.setStringValue_("")
+            window.counter_label.setAutoresizingMask_(NSViewMinXMargin)
+            window.input_field.addSubview_(window.counter_label)
+
             try:
                 config = NSImageSymbolConfiguration.configurationWithPointSize_weight_scale_(20.0, 4, 3)
             except AttributeError:
@@ -329,6 +344,11 @@ class OverlayWindow(NSWindow):
 
     def askAgy_(self, question):
         return translator.ask_antigravity(question)
+
+    def showText_withCounter_(self, text, counter_str=""):
+        if hasattr(self, 'counter_label') and self.counter_label:
+            self.counter_label.setStringValue_(counter_str if counter_str else "")
+        self.showText_(text)
 
     def showText_(self, text):
         from AppKit import NSAttributedString, NSData, NSDictionary, NSHTMLTextDocumentType

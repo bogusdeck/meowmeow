@@ -11,7 +11,9 @@ class HotkeyManager:
         on_reduce_size=None,
         on_expand_size=None,
         on_toggle_overlay=None,
-        on_instant_agy=None
+        on_instant_agy=None,
+        on_next_card=None,
+        on_prev_card=None
     ):
         self.on_translate = on_translate
         self.on_move_left = on_move_left
@@ -22,6 +24,8 @@ class HotkeyManager:
         self.on_expand_size = on_expand_size
         self.on_toggle_overlay = on_toggle_overlay
         self.on_instant_agy = on_instant_agy
+        self.on_next_card = on_next_card
+        self.on_prev_card = on_prev_card
         self.listener = None
 
     def start(self):
@@ -29,6 +33,10 @@ class HotkeyManager:
             '<cmd>+<ctrl>+p': self.on_activate,
         }
 
+        if self.on_next_card:
+            hotkeys['<cmd>+<ctrl>+.'] = self.on_next_card
+        if self.on_prev_card:
+            hotkeys['<cmd>+<ctrl>+,'] = self.on_prev_card
         if self.on_instant_agy:
             hotkeys['<cmd>+<ctrl>+i'] = self.on_instant_agy
         if self.on_toggle_overlay:
@@ -57,6 +65,7 @@ class HotkeyManager:
             self.listener.start()
             print("Hotkeys registered successfully:")
             print(" - Cmd+Ctrl+P (or Cmd+Ctrl+Fn+P): Translate clipboard")
+            print(" - Cmd+Ctrl+> / Cmd+Ctrl+<: Next / Previous response card")
             print(" - Cmd+Ctrl+I (or Cmd+Ctrl+Fn+I): Accelerate with Antigravity (agy)")
             print(" - Cmd+Ctrl+H (or Cmd+Ctrl+Fn+H): Toggle hide/show overlay")
             print(" - Cmd+Ctrl+Arrow (or Cmd+Ctrl+Fn+Arrow): Move window directionally")
