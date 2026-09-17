@@ -403,15 +403,17 @@ class OverlayWindow(NSWindow):
         self._hidden = True
         self.setAlphaValue_(0.0)
         self.setIgnoresMouseEvents_(True)
+        self.orderOut_(None)
         
     def show_overlay(self):
         self._hidden = False
         self.setAlphaValue_(0.85)
         self.setIgnoresMouseEvents_(False)
         self.makeKeyAndOrderFront_(None)
+        NSApplication.sharedApplication().activateIgnoringOtherApps_(True)
         
     def is_overlay_visible(self):
-        return not self._hidden and self.alphaValue() > 0.0
+        return not self._hidden and self.isVisible() and self.alphaValue() > 0.0
 
     def toggle_overlay(self):
         if self.is_overlay_visible():

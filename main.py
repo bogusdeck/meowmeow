@@ -68,7 +68,7 @@ class AppDelegate(NSObject):
         self.hotkey_manager.start()
         print("QuickTranslate running.")
         print(" - Cmd+Ctrl+P (or Cmd+Ctrl+Fn+P): Translate clipboard")
-        print(" - Cmd+Ctrl+X (or Cmd+Ctrl+Fn+X): Toggle hide/show overlay")
+        print(" - Cmd+Ctrl+H (or Cmd+Ctrl+Fn+H): Toggle hide/show overlay")
         print(" - Cmd+Ctrl+Arrow (or Cmd+Ctrl+Fn+Arrow): Move window")
         print(" - Cmd+Ctrl+- (or Cmd+Ctrl+Fn+-): Reduce overlay size")
         print(" - Cmd+Ctrl+= (or Cmd+Ctrl+Fn++): Maximize/Expand overlay size")
