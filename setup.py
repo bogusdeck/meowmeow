@@ -6,7 +6,7 @@ setup(
     description="Translucent macOS HUD overlay for instant coding challenge translation & AI assistance using Ollama and Antigravity.",
     long_description=open("README.md", "r", encoding="utf-8").read() if __import__("os").path.exists("README.md") else "",
     long_description_content_type="text/markdown",
-    url="https://github.com/bogusdeck/overlay",
+    url="https://github.com/bogusdeck/meowmeow",
     author="bogusdeck",
     license="MIT",
     py_modules=["main", "overlay", "translator", "constants", "hotkey"],

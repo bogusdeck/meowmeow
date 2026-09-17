@@ -47,8 +47,8 @@ overlay
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/bogusdeck/overlay.git
-   cd overlay
+   git clone https://github.com/bogusdeck/meowmeow.git
+   cd meowmeow
    ```
 
 2. **Run setup script:**
