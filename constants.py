@@ -8,10 +8,13 @@ PREFERRED_PROVIDER = os.getenv("OVERLAY_PROVIDER", "ollama")
 # Ollama Settings
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 OLLAMA_TAGS_URL = os.getenv("OLLAMA_TAGS_URL", "http://localhost:11434/api/tags")
-MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5-coder:7b")
+MODEL = os.getenv("OLLAMA_MODEL", "gemini-3.1-pro-high")
 API_KEY = os.getenv("OLLAMA_API_KEY", "")
 
 # Antigravity CLI Settings
+AGY_MODEL = os.getenv("AGY_MODEL", "gemini-3.1-pro-high")
+AGY_EFFORT = os.getenv("AGY_EFFORT", "high")
+
 def resolve_agy_path() -> str:
     """Find absolute path to agy CLI executable."""
     found = shutil.which("agy")

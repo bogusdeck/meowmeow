@@ -4,7 +4,7 @@ import logging
 import subprocess
 from constants import (
     OLLAMA_URL, OLLAMA_TAGS_URL, MODEL, TRANSLATE_TEXT_PROMPT, API_KEY,
-    AGY_PATH, PREFERRED_PROVIDER
+    AGY_PATH, PREFERRED_PROVIDER, AGY_MODEL, AGY_EFFORT
 )
 
 # Set up logging to both terminal and file
@@ -19,11 +19,18 @@ logging.basicConfig(
 logger = logging.getLogger("Translator")
 
 def translate_with_antigravity(prompt: str) -> str:
-    """Executes prompt non-interactively using Antigravity (agy -p)."""
+    """Executes prompt non-interactively using Antigravity CLI."""
     try:
-        logger.info(f"Executing prompt via Antigravity CLI ({AGY_PATH} -p)...")
+        cmd = [AGY_PATH]
+        if AGY_MODEL:
+            cmd.extend(["--model", AGY_MODEL])
+        if AGY_EFFORT:
+            cmd.extend(["--effort", AGY_EFFORT])
+        cmd.extend(["-p", prompt])
+        
+        logger.info(f"Executing prompt via Antigravity CLI ({' '.join(cmd[:4])}...)...")
         result = subprocess.run(
-            [AGY_PATH, "-p", prompt],
+            cmd,
             capture_output=True, text=True, timeout=120
         )
         if result.returncode == 0 and result.stdout.strip():
