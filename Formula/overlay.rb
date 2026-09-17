@@ -17,7 +17,7 @@ class Overlay < Formula
     <<~EOS
       🛸 Overlay installed successfully!
 
-      Keyboard Shortcut: Cmd + Shift + T (Clipboard translate)
+      Keyboard Shortcut: Cmd + Ctrl + Fn + P (Clipboard translate)
 
       NOTE: Overlay requires macOS Accessibility permissions for global hotkeys.
       Please grant Accessibility access in:

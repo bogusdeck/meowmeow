@@ -20,7 +20,7 @@ class HotkeyManager:
 
     def start(self):
         hotkeys = {
-            '<cmd>+<shift>+t': self.on_activate,
+            '<cmd>+<ctrl>+p': self.on_activate,
         }
 
         if self.on_move_left:
@@ -42,7 +42,7 @@ class HotkeyManager:
             self.listener = keyboard.GlobalHotKeys(hotkeys)
             self.listener.start()
             print("Hotkeys registered successfully:")
-            print(" - Cmd+Shift+T: Translate clipboard")
+            print(" - Cmd+Ctrl+P (or Cmd+Ctrl+Fn+P): Translate clipboard")
             print(" - Cmd+Ctrl+Arrow (or Cmd+Ctrl+Fn+Arrow): Move window directionally")
             print(" - Cmd+Ctrl+M (or Cmd+Ctrl+Fn+M): Reduce overlay size")
         except Exception as e:

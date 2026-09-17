@@ -73,7 +73,7 @@ overlay
 
 ## 🔒 Required macOS Permissions
 
-Since `overlay` registers system-wide hotkeys (<kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd>), macOS requires **Accessibility** permission:
+Since `overlay` registers system-wide hotkeys (<kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>P</kbd>), macOS requires **Accessibility** permission:
 
 1. Open **System Settings** -> **Privacy & Security** -> **Accessibility**.
 2. Add your Terminal app (e.g. `iTerm`, `Terminal`, or `ghostty`).
@@ -98,7 +98,7 @@ You can customize the AI provider behavior by setting environment variables in y
 
 | Action | Control / Hotkey |
 | :--- | :--- |
-| **Clipboard Translate** | <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd> |
+| **Clipboard Translate** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>P</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>P</kbd>) |
 | **Move Overlay Window** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>Arrow</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Arrow</kbd>) |
 | **Reduce Window Size** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>M</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>M</kbd>) |
 | **Snap Screenshot (OCR)** | Click **Snap** button (Camera icon) |

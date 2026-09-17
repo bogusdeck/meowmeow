@@ -65,7 +65,7 @@ class AppDelegate(NSObject):
         )
         self.hotkey_manager.start()
         print("QuickTranslate running.")
-        print(" - Cmd+Shift+T: Translate clipboard")
+        print(" - Cmd+Ctrl+P (or Cmd+Ctrl+Fn+P): Translate clipboard")
         print(" - Cmd+Ctrl+Arrow (or Cmd+Ctrl+Fn+Arrow): Move window")
         print(" - Cmd+Ctrl+M (or Cmd+Ctrl+Fn+M): Reduce overlay size")
         print(" - Press Ctrl+C in terminal to stop.")
