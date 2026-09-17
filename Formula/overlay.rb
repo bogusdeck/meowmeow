@@ -9,6 +9,17 @@ class Overlay < Formula
 
   include Language::Python::Virtualenv
 
+  # Build tools - must come first so pkg_resources is available
+  resource "setuptools" do
+    url "https://files.pythonhosted.org/packages/d6/4f/b10f707e14ef7de524fe1f8988a294fb262a29c9b5b12275c7e188864aed/setuptools-69.5.1.tar.gz"
+    sha256 "6c1fccdac05a97e598fb0ae3bbed5904ccb317337a51139dcd51453611bbb987"
+  end
+
+  resource "wheel" do
+    url "https://files.pythonhosted.org/packages/b8/d6/ac9cd92ea2ad502ff7c1ab683806a9deb34711a1e2bd8a59814e8fc27e69/wheel-0.43.0.tar.gz"
+    sha256 "465ef92c69fa5c5da2d1cf8ac40559a8c940886afcef87dcf14b9470862f1d85"
+  end
+
   resource "six" do
     url "https://files.pythonhosted.org/packages/71/39/171f1c67cd00715f190ba0b100d606d440a28c93c7714febeca8b79af85e/six-1.16.0.tar.gz"
     sha256 "1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"
@@ -81,6 +92,7 @@ class Overlay < Formula
 
   def install
     venv = virtualenv_create(libexec, "python3.11")
+
     resources.each do |r|
       if r.name == "pynput"
         r.stage do
@@ -93,6 +105,7 @@ class Overlay < Formula
         venv.pip_install r
       end
     end
+
     venv.pip_install buildpath
   end
 
