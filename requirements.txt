@@ -1,0 +1,6 @@
+pyobjc
+pynput
+pyperclip
+requests
+markdown
+pygments
