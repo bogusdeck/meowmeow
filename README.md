@@ -99,6 +99,8 @@ You can customize the AI provider behavior by setting environment variables in y
 | Action | Control / Hotkey |
 | :--- | :--- |
 | **Clipboard Translate** | <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>T</kbd> |
+| **Move Overlay Window** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>Arrow</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Arrow</kbd>) |
+| **Reduce Window Size** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>M</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>M</kbd>) |
 | **Snap Screenshot (OCR)** | Click **Snap** button (Camera icon) |
 | **Paste & Translate** | Click **Paste** button (Clipboard icon) |
 | **Hide / Show HUD** | Click **Hide** button (Eye icon) |

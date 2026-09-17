@@ -378,3 +378,33 @@ class OverlayWindow(NSWindow):
         
     def is_overlay_visible(self):
         return not self._hidden and self.alphaValue() > 0.0
+
+    def moveWindow_(self, direction):
+        step = 60.0
+        frame = self.frame()
+        x, y, w, h = frame.origin.x, frame.origin.y, frame.size.width, frame.size.height
+        
+        screen = self.screen()
+        if not screen:
+            screen = NSWindow.screens().objectAtIndex_(0)
+        screen_frame = screen.visibleFrame()
+        
+        if direction == "left":
+            x = max(screen_frame.origin.x, x - step)
+        elif direction == "right":
+            x = min(screen_frame.origin.x + screen_frame.size.width - w, x + step)
+        elif direction == "up":
+            y = min(screen_frame.origin.y + screen_frame.size.height - h, y + step)
+        elif direction == "down":
+            y = max(screen_frame.origin.y, y - step)
+            
+        self.setFrame_display_(NSMakeRect(x, y, w, h), True)
+
+    def reduceSize(self):
+        current_frame = self.frame()
+        min_height = 60.0
+        if current_frame.size.height > min_height:
+            new_height = min_height
+            y = current_frame.origin.y + current_frame.size.height - new_height
+            self.output_view.setString_("")
+            self.setFrame_display_(NSMakeRect(current_frame.origin.x, y, current_frame.size.width, new_height), True)

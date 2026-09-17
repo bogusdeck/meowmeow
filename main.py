@@ -55,17 +55,66 @@ class AppDelegate(NSObject):
         self.window = OverlayWindow.create()
         self.window.app_delegate = self
         self.window.showText_("")
-        self.hotkey_manager = HotkeyManager(self.on_hotkey)
+        self.hotkey_manager = HotkeyManager(
+            on_translate=self.on_hotkey,
+            on_move_left=self.on_move_left,
+            on_move_right=self.on_move_right,
+            on_move_up=self.on_move_up,
+            on_move_down=self.on_move_down,
+            on_reduce_size=self.on_reduce_size
+        )
         self.hotkey_manager.start()
         print("QuickTranslate running.")
-        print(" - Press Cmd+Shift+T to translate clipboard.")
-        print(" - Press Ctrl+C in this terminal to stop the server.")
+        print(" - Cmd+Shift+T: Translate clipboard")
+        print(" - Cmd+Ctrl+Arrow (or Cmd+Ctrl+Fn+Arrow): Move window")
+        print(" - Cmd+Ctrl+M (or Cmd+Ctrl+Fn+M): Reduce overlay size")
+        print(" - Press Ctrl+C in terminal to stop.")
         sys.stdout.flush()
 
     def on_hotkey(self):
         self.performSelectorOnMainThread_withObject_waitUntilDone_(
             objc.selector(self.handleTranslation, signature=b'v@:'), None, False
         )
+
+    def on_move_left(self):
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+            objc.selector(self.handleMoveLeft, signature=b'v@:'), None, False
+        )
+
+    def handleMoveLeft(self):
+        self.window.moveWindow_("left")
+
+    def on_move_right(self):
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+            objc.selector(self.handleMoveRight, signature=b'v@:'), None, False
+        )
+
+    def handleMoveRight(self):
+        self.window.moveWindow_("right")
+
+    def on_move_up(self):
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+            objc.selector(self.handleMoveUp, signature=b'v@:'), None, False
+        )
+
+    def handleMoveUp(self):
+        self.window.moveWindow_("up")
+
+    def on_move_down(self):
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+            objc.selector(self.handleMoveDown, signature=b'v@:'), None, False
+        )
+
+    def handleMoveDown(self):
+        self.window.moveWindow_("down")
+
+    def on_reduce_size(self):
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+            objc.selector(self.handleReduceSize, signature=b'v@:'), None, False
+        )
+
+    def handleReduceSize(self):
+        self.window.reduceSize()
 
     def applicationDidFinishLaunching_(self, notification):
         # Fallback if it does fire
