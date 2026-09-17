@@ -1,98 +1,64 @@
 # Overlay — macOS AI Assistant & Code Translator HUD
 
-Overlay is a lightweight, floating translucent HUD application for macOS designed for instant coding challenge translation, OCR text extraction, and technical interview problem-solving powered by Ollama and Antigravity (`agy -p`).
+Overlay is a lightweight, floating translucent HUD application for macOS written in Go for instant coding challenge translation and AI technical interview assistance powered by Ollama and Antigravity (`agy -p`).
 
 ## Features
 
-- Translucent floating HUD overlay built natively with macOS AppKit (`NSVisualEffectView`) and Quartz rendering.
-- Global hotkey trigger: Press `Cmd` + `Ctrl` + `P` (or `Cmd` + `Ctrl` + `Fn` + `P`) to instantly translate and solve code copied to your clipboard.
-- Built-in screen capture & OCR: Click **Snap** to take a screenshot and automatically extract text using macOS Vision framework (`VNRecognizeTextRequest`).
-- Dual AI backend support:
-  - Primary: Local or Cloud Ollama (defaults to `qwen2.5-coder:7b`).
-  - Backup/Fallback: Antigravity (`agy -p`) CLI integration for seamless reliability if Ollama is offline.
-- Rich Markdown & code highlighting: Renders output with Pygments syntax highlighting.
+- **Single Native Binary**: 100% Go & macOS AppKit (CGo). Zero Python/pip runtime dependencies.
+- **Translucent HUD Overlay**: Native macOS AppKit panel with dark visual effects (`NSVisualEffectView`).
+- **Global Hotkey Trigger**: Press `Cmd` + `Ctrl` + `P` (or `Cmd` + `Ctrl` + `Fn` + `P`) to instantly solve code from your clipboard.
+- **Directional Controls & Resizing**: Move window with `Cmd` + `Ctrl` + `Arrows`, resize with `Cmd` + `Ctrl` + `+`/`-`.
+- **Response History Cards**: Switch between past responses using `Cmd` + `Ctrl` + `>` and `Cmd` + `Ctrl` + `<`.
+- **Antigravity Acceleration**: Press `Cmd` + `Ctrl` + `I` to run an instant parallel request with Antigravity CLI.
+- **Dual AI Backend Support**:
+  - Primary: Local or Cloud Ollama API.
+  - Backup/Fallback: Antigravity CLI (`agy -p`).
 
 ## Installation
 
-### Homebrew
+### Homebrew (Recommended)
 
 ```bash
-brew tap bogusdeck/tap
+brew tap bogusdeck/meowmeow https://github.com/bogusdeck/meowmeow.git
 brew install overlay
 ```
 
-### Manual Installation
+#### Run as Background Service
+```bash
+brew services start overlay
+```
+
+#### CLI Daemon Commands
+```bash
+overlay --start
+overlay --stop
+overlay --status
+```
+
+### Manual Build
 
 #### Prerequisites
-
-- macOS 12+ (Monterey or newer recommended)
-- Python 3.9+ (Python 3.11 recommended)
+- macOS 12+
+- Go 1.20+
 - Ollama and/or Antigravity CLI (`agy`)
 
-#### Setup Steps
+#### Build Steps
+```bash
+git clone https://github.com/bogusdeck/meowmeow.git
+cd meowmeow
+go build -o overlay .
+./overlay --start
+```
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/bogusdeck/meowmeow.git
-   cd meowmeow
-   ```
+## Hotkeys Quick Reference
 
-2. Run the setup script:
-   ```bash
-   chmod +x setup.sh
-   ./setup.sh
-   ```
-
-   Alternatively, install via pip in editable mode:
-   ```bash
-   pip install -e .
-   ```
-
-3. Launch the application:
-   ```bash
-   python main.py
-   # or simply
-   overlay
-   ```
-
-## Configuration
-
-Customize AI provider behavior by setting environment variables in your shell (`~/.zshrc` or `~/.bashrc`):
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `OVERLAY_PROVIDER` | Preferred provider order (`ollama`, `antigravity`, or `auto`) | `ollama` |
-| `OLLAMA_URL` | Ollama API generate endpoint | `http://localhost:11434/api/generate` |
-| `OLLAMA_MODEL` | Ollama model to use | `qwen2.5-coder:7b` |
-| `OLLAMA_API_KEY` | Optional API key for Cloud Ollama endpoints | `""` |
-
-## Hotkeys & UI Controls
-
-| Action | Control / Hotkey |
-|--------|------------------|
-| Translate clipboard | `Cmd` + `Ctrl` + `P` (or `Cmd` + `Ctrl` + `Fn` + `P`) |
-| Next response card | `Cmd` + `Ctrl` + `.` (or `Cmd` + `Ctrl` + `Fn` + `.`) |
-| Previous response card | `Cmd` + `Ctrl` + `,` (or `Cmd` + `Ctrl` + `Fn` + `,`) |
-| Accelerate with Antigravity (agy) | `Cmd` + `Ctrl` + `I` (or `Cmd` + `Ctrl` + `Fn` + `I`) |
-| Toggle hide/show overlay | `Cmd` + `Ctrl` + `H` (or `Cmd` + `Ctrl` + `Fn` + `H`) / `X` |
-| Move window left | `Cmd` + `Ctrl` + `Left Arrow` (or `Cmd` + `Ctrl` + `Fn` + `Left Arrow`) |
-| Move window right | `Cmd` + `Ctrl` + `Right Arrow` (or `Cmd` + `Ctrl` + `Fn` + `Right Arrow`) |
-| Move window up | `Cmd` + `Ctrl` + `Up Arrow` (or `Cmd` + `Ctrl` + `Fn` + `Up Arrow`) |
-| Move window down | `Cmd` + `Ctrl` + `Down Arrow` (or `Cmd` + `Ctrl` + `Fn` + `Down Arrow`) |
-| Reduce overlay size | `Cmd` + `Ctrl` + `-` (or `Cmd` + `Ctrl` + `Fn` + `-`) / `M` |
-| Expand overlay size | `Cmd` + `Ctrl` + `=` (or `Cmd` + `Ctrl` + `Fn` + `=`) |
-| Snap screenshot (OCR) | Click **Snap** button (Camera icon) |
-| Paste & translate | Click **Paste** button (Clipboard icon) |
-| Close overlay | Click **X** button (Close icon) |
-
-## Required macOS Permissions
-
-Since Overlay registers system-wide hotkeys (`Cmd` + `Ctrl` + `Fn` + `P`), macOS requires Accessibility permission:
-
-1. Open **System Settings** → **Privacy & Security** → **Accessibility**.
-2. Add your Terminal app (e.g., iTerm, Terminal, or Ghostty).
-3. Toggle the switch to **ON**.
-
-## License
-
-Distributed under the MIT License. See [`LICENSE`](LICENSE) for details.
+| Action | Shortcut |
+|---|---|
+| Translate Clipboard | `Cmd` + `Ctrl` + `P` |
+| Toggle Hide/Show Overlay | `Cmd` + `Ctrl` + `H` or `Cmd` + `Ctrl` + `X` |
+| Accelerate with Antigravity | `Cmd` + `Ctrl` + `I` |
+| Next Response Card | `Cmd` + `Ctrl` + `.` (`>`) |
+| Previous Response Card | `Cmd` + `Ctrl` + `,` (`<`) |
+| Move Window | `Cmd` + `Ctrl` + `Arrows` |
+| Reduce Window Size | `Cmd` + `Ctrl` + `-` |
+| Expand Window Size | `Cmd` + `Ctrl` + `=` |
