@@ -166,10 +166,22 @@ class AppDelegate(NSObject):
             req_id = self.active_request_id
             
         if not prompt:
-            self.window.showText_("No active request to accelerate.")
+            text = pyperclip.paste()
+            if not text or not text.strip():
+                if hasattr(self.window, 'input_field'):
+                    text = self.window.input_field.stringValue()
+            if text and text.strip():
+                prompt = translator.TRANSLATE_TEXT_PROMPT.format(text=text.strip())
+                with self.request_lock:
+                    self.active_request_id += 1
+                    req_id = self.active_request_id
+                    self.current_prompt = prompt
+
+        if not prompt or not prompt.strip():
+            self.window.showText_("Clipboard and input field are empty.")
             return
 
-        self.window.showText_("⚡ Accelerating with Antigravity (agy)...")
+        self.window.showText_("⚡ Asking Antigravity (agy)...")
         
         def fetch_fast():
             try:
@@ -181,7 +193,10 @@ class AppDelegate(NSObject):
                         )
                         self.current_prompt = None
             except Exception as e:
-                logger.error(f"Instant Antigravity acceleration error: {e}")
+                logger.error(f"Instant Antigravity error: {e}")
+                self.performSelectorOnMainThread_withObject_waitUntilDone_(
+                    objc.selector(self.updateUIWithResult_, signature=b'v@:@'), f"Antigravity Error: {e}", False
+                )
 
         threading.Thread(target=fetch_fast, daemon=True).start()
 
