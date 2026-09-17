@@ -99,6 +99,7 @@ You can customize the AI provider behavior by setting environment variables in y
 | Action | Control / Hotkey |
 | :--- | :--- |
 | **Clipboard Translate** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>P</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>P</kbd>) |
+| **Instant Agy Accelerate** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>I</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>I</kbd>) |
 | **Toggle Hide / Show HUD** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>H</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>H</kbd> / <kbd>X</kbd>) |
 | **Move Overlay Window** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>Arrow</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Arrow</kbd>) |
 | **Minimize / Reduce Size** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>-</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>-</kbd>) |

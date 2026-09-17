@@ -63,17 +63,125 @@ class AppDelegate(NSObject):
             on_move_down=self.on_move_down,
             on_reduce_size=self.on_reduce_size,
             on_expand_size=self.on_expand_size,
-            on_toggle_overlay=self.on_toggle_overlay
+            on_toggle_overlay=self.on_toggle_overlay,
+            on_instant_agy=self.on_instant_agy
         )
         self.hotkey_manager.start()
         print("QuickTranslate running.")
         print(" - Cmd+Ctrl+P (or Cmd+Ctrl+Fn+P): Translate clipboard")
+        print(" - Cmd+Ctrl+I (or Cmd+Ctrl+Fn+I): Accelerate with Antigravity (agy)")
         print(" - Cmd+Ctrl+H (or Cmd+Ctrl+Fn+H): Toggle hide/show overlay")
         print(" - Cmd+Ctrl+Arrow (or Cmd+Ctrl+Fn+Arrow): Move window")
         print(" - Cmd+Ctrl+- (or Cmd+Ctrl+Fn+-): Reduce overlay size")
         print(" - Cmd+Ctrl+= (or Cmd+Ctrl+Fn++): Maximize/Expand overlay size")
         print(" - Press Ctrl+C in terminal to stop.")
         sys.stdout.flush()
+
+    current_prompt = None
+    active_request_id = 0
+    request_lock = threading.Lock()
+
+    def start_request(self, prompt_text):
+        with self.request_lock:
+            self.active_request_id += 1
+            req_id = self.active_request_id
+            self.current_prompt = prompt_text
+            
+        self.window.showText_("Translating...")
+        
+        def fetch_primary():
+            result = translator.translate_text(prompt_text, is_raw_prompt=True)
+            with self.request_lock:
+                if self.active_request_id == req_id:
+                    self.performSelectorOnMainThread_withObject_waitUntilDone_(
+                        objc.selector(self.updateUIWithResult_, signature=b'v@:@'), result, False
+                    )
+                    self.current_prompt = None
+
+        threading.Thread(target=fetch_primary, daemon=True).start()
+
+    def on_instant_agy(self):
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+            objc.selector(self.handleInstantAgy, signature=b'v@:'), None, False
+        )
+
+    def handleInstantAgy(self):
+        with self.request_lock:
+            prompt = self.current_prompt
+            req_id = self.active_request_id
+            
+        if not prompt:
+            self.window.showText_("No active request to accelerate.")
+            return
+
+        self.window.showText_("⚡ Accelerating with Antigravity (agy)...")
+        
+        def fetch_fast():
+            try:
+                result = translator.translate_with_antigravity(prompt)
+                with self.request_lock:
+                    if self.active_request_id == req_id:
+                        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+                            objc.selector(self.updateUIWithResult_, signature=b'v@:@'), result, False
+                        )
+                        self.current_prompt = None
+            except Exception as e:
+                logger.error(f"Instant Antigravity acceleration error: {e}")
+
+        threading.Thread(target=fetch_fast, daemon=True).start()
+
+    def handleScreenshot(self):
+        import subprocess, tempfile, os
+        self.window.showText_("Taking screenshot...")
+        
+        def capture_and_answer():
+            fd, path = tempfile.mkstemp(suffix=".png")
+            os.close(fd)
+            subprocess.run(["screencapture", "-x", path])
+            
+            if os.path.exists(path) and os.path.getsize(path) > 0:
+                self.performSelectorOnMainThread_withObject_waitUntilDone_(
+                    objc.selector(self.updateUIWithStatus_, signature=b'v@:@'), "Running OCR...", False
+                )
+                extracted_text = self.window.performOCR_(path)
+                
+                if extracted_text and extracted_text.strip() and not extracted_text.startswith("OCR error") and not extracted_text.startswith("Failed"):
+                    question = f"Answer this question based on the screenshot text:\n\n{extracted_text}"
+                    self.start_request(question)
+                else:
+                    self.performSelectorOnMainThread_withObject_waitUntilDone_(
+                        objc.selector(self.updateUIWithResult_, signature=b'v@:@'), f"OCR failed: {extracted_text}", False
+                    )
+            else:
+                self.performSelectorOnMainThread_withObject_waitUntilDone_(
+                    objc.selector(self.updateUIWithResult_, signature=b'v@:@'), "Screenshot failed.", False
+                )
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+
+        threading.Thread(target=capture_and_answer, daemon=True).start()
+
+    def updateUIWithStatus_(self, status):
+        self.window.showText_(status)
+        
+    def handleTranslation(self):
+        text = pyperclip.paste()
+        if not text or not text.strip():
+            self.window.showText_("Clipboard is empty")
+            return
+        prompt = translator.TRANSLATE_TEXT_PROMPT.format(text=text.strip())
+        self.start_request(prompt)
+
+    def handleManualTranslation_(self, text):
+        if not text or not text.strip():
+            return
+        prompt = translator.TRANSLATE_TEXT_PROMPT.format(text=text.strip())
+        self.start_request(prompt)
+
+    def updateUIWithResult_(self, result):
+        self.window.showText_(result)
 
     def on_hotkey(self):
         self.performSelectorOnMainThread_withObject_waitUntilDone_(
