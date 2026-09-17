@@ -71,11 +71,32 @@ func startBackground() {
 
 func stopBackground() {
 	stopped := false
+
+	// If managed by Homebrew services / launchd, stop the service first to prevent auto-restart
+	_ = exec.Command("brew", "services", "stop", "overlay").Run()
+
 	if pid := getRunningPID(); pid != 0 {
 		if proc, err := os.FindProcess(pid); err == nil {
 			_ = proc.Signal(syscall.SIGTERM)
 			fmt.Printf("🛑 Overlay (PID %d) stopped.\n", pid)
 			stopped = true
+		}
+	}
+
+	// Terminate any remaining overlay instances
+	out, err := exec.Command("pgrep", "-f", "overlay").Output()
+	if err == nil {
+		myPID := os.Getpid()
+		for _, line := range strings.Split(string(out), "\n") {
+			line = strings.TrimSpace(line)
+			if line != "" {
+				if pid, err := strconv.Atoi(line); err == nil && pid != myPID {
+					if proc, err := os.FindProcess(pid); err == nil {
+						_ = proc.Signal(syscall.SIGTERM)
+						stopped = true
+					}
+				}
+			}
 		}
 	}
 
