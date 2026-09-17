@@ -99,12 +99,12 @@ You can customize the AI provider behavior by setting environment variables in y
 | Action | Control / Hotkey |
 | :--- | :--- |
 | **Clipboard Translate** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>P</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>P</kbd>) |
+| **Toggle Hide / Show HUD** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>H</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>H</kbd>) |
 | **Move Overlay Window** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>Arrow</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Arrow</kbd>) |
 | **Minimize / Reduce Size** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>-</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>-</kbd>) |
 | **Maximize / Expand Size** | <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>Fn</kbd> + <kbd>+</kbd> (or <kbd>Cmd</kbd> + <kbd>Ctrl</kbd> + <kbd>=</kbd>) |
 | **Snap Screenshot (OCR)** | Click **Snap** button (Camera icon) |
 | **Paste & Translate** | Click **Paste** button (Clipboard icon) |
-| **Hide / Show HUD** | Click **Hide** button (Eye icon) |
 | **Close Overlay** | Click **X** button (Close icon) |
 
 ---

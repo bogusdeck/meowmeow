@@ -9,7 +9,8 @@ class HotkeyManager:
         on_move_up=None,
         on_move_down=None,
         on_reduce_size=None,
-        on_expand_size=None
+        on_expand_size=None,
+        on_toggle_overlay=None
     ):
         self.on_translate = on_translate
         self.on_move_left = on_move_left
@@ -18,6 +19,7 @@ class HotkeyManager:
         self.on_move_down = on_move_down
         self.on_reduce_size = on_reduce_size
         self.on_expand_size = on_expand_size
+        self.on_toggle_overlay = on_toggle_overlay
         self.listener = None
 
     def start(self):
@@ -25,6 +27,8 @@ class HotkeyManager:
             '<cmd>+<ctrl>+p': self.on_activate,
         }
 
+        if self.on_toggle_overlay:
+            hotkeys['<cmd>+<ctrl>+h'] = self.on_toggle_overlay
         if self.on_move_left:
             hotkeys['<cmd>+<ctrl>+<left>'] = self.on_move_left
             hotkeys['<cmd>+<ctrl>+<home>'] = self.on_move_left
@@ -48,6 +52,7 @@ class HotkeyManager:
             self.listener.start()
             print("Hotkeys registered successfully:")
             print(" - Cmd+Ctrl+P (or Cmd+Ctrl+Fn+P): Translate clipboard")
+            print(" - Cmd+Ctrl+H (or Cmd+Ctrl+Fn+H): Toggle hide/show overlay")
             print(" - Cmd+Ctrl+Arrow (or Cmd+Ctrl+Fn+Arrow): Move window directionally")
             print(" - Cmd+Ctrl+- (or Cmd+Ctrl+Fn+-): Minimize / Reduce overlay size")
             print(" - Cmd+Ctrl+= (or Cmd+Ctrl+Fn++): Maximize / Expand overlay size")

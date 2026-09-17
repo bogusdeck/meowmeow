@@ -62,11 +62,13 @@ class AppDelegate(NSObject):
             on_move_up=self.on_move_up,
             on_move_down=self.on_move_down,
             on_reduce_size=self.on_reduce_size,
-            on_expand_size=self.on_expand_size
+            on_expand_size=self.on_expand_size,
+            on_toggle_overlay=self.on_toggle_overlay
         )
         self.hotkey_manager.start()
         print("QuickTranslate running.")
         print(" - Cmd+Ctrl+P (or Cmd+Ctrl+Fn+P): Translate clipboard")
+        print(" - Cmd+Ctrl+H (or Cmd+Ctrl+Fn+H): Toggle hide/show overlay")
         print(" - Cmd+Ctrl+Arrow (or Cmd+Ctrl+Fn+Arrow): Move window")
         print(" - Cmd+Ctrl+- (or Cmd+Ctrl+Fn+-): Reduce overlay size")
         print(" - Cmd+Ctrl+= (or Cmd+Ctrl+Fn++): Maximize/Expand overlay size")
@@ -77,6 +79,21 @@ class AppDelegate(NSObject):
         self.performSelectorOnMainThread_withObject_waitUntilDone_(
             objc.selector(self.handleTranslation, signature=b'v@:'), None, False
         )
+
+    def on_toggle_overlay(self):
+        now = time.time()
+        if now - self.last_toggle_time < self.toggle_cooldown:
+            return
+        self.last_toggle_time = now
+        self.performSelectorOnMainThread_withObject_waitUntilDone_(
+            objc.selector(self.handleToggleOverlay, signature=b'v@:'), None, False
+        )
+
+    def handleToggleOverlay(self):
+        self.window.toggle_overlay()
+
+    def toggle_overlay(self):
+        self.handleToggleOverlay()
 
     def on_move_left(self):
         self.performSelectorOnMainThread_withObject_waitUntilDone_(

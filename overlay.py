@@ -379,6 +379,12 @@ class OverlayWindow(NSWindow):
     def is_overlay_visible(self):
         return not self._hidden and self.alphaValue() > 0.0
 
+    def toggle_overlay(self):
+        if self.is_overlay_visible():
+            self.hide_overlay()
+        else:
+            self.show_overlay()
+
     def moveWindow_(self, direction):
         step = 60.0
         frame = self.frame()
