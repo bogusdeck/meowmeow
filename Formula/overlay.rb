@@ -25,7 +25,7 @@ class Overlay < Formula
   end
 
   resource "requests" do
-    url "https://files.pythonhosted.org/packages/70/8e/0e2d847013cb52cd35b38c009ea167a8954763820573966a35b0e6a6a601/requests-2.31.0-py3-none-any.whl"
+    url "https://files.pythonhosted.org/packages/70/8e/0e2d847013cb52cd35b38c009bb167a1a26b2ce6cd6965bf26b47bc0bf44/requests-2.31.0-py3-none-any.whl"
     sha256 "58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f"
   end
 
