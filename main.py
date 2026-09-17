@@ -1,4 +1,6 @@
 import sys
+import os
+import subprocess
 import threading
 import pyperclip
 import objc
@@ -416,12 +418,114 @@ class AppDelegate(NSObject):
     def updateUIWithResult_(self, result):
         self.window.showText_(result)
 
+PID_FILE = "/tmp/overlay.pid"
+
+def get_running_pid():
+    if os.path.exists(PID_FILE):
+        try:
+            with open(PID_FILE, "r") as f:
+                pid = int(f.read().strip())
+            os.kill(pid, 0)
+            return pid
+        except Exception:
+            return None
+    return None
+
+def start_background():
+    pid = get_running_pid()
+    if pid:
+        print(f"🛸 Overlay is already running in background (PID {pid}).")
+        return
+
+    cmd = [sys.executable, os.path.abspath(__file__), "--daemon"]
+    log_dir = os.path.expanduser("~/.overlay")
+    os.makedirs(log_dir, exist_ok=True)
+    log_path = os.path.join(log_dir, "overlay.log")
+    
+    with open(log_path, "a") as log_file:
+        proc = subprocess.Popen(
+            cmd,
+            stdout=log_file,
+            stderr=log_file,
+            stdin=subprocess.DEVNULL,
+            start_new_session=True
+        )
+    
+    with open(PID_FILE, "w") as f:
+        f.write(str(proc.pid))
+        
+    print(f"🛸 Overlay started in background (PID {proc.pid})!")
+    print(f"   Log file: {log_path}")
+    print("   Use 'overlay --stop' or 'brew services stop overlay' to stop.")
+
+def stop_background():
+    import signal
+    pid = get_running_pid()
+    stopped = False
+    if pid:
+        try:
+            os.kill(pid, signal.SIGTERM)
+            print(f"🛑 Overlay (PID {pid}) stopped.")
+            stopped = True
+        except Exception as e:
+            print(f"Error stopping process {pid}: {e}")
+
+    try:
+        result = subprocess.run(["pgrep", "-f", "main.py"], capture_output=True, text=True)
+        pids = [int(p) for p in result.stdout.strip().split() if p and int(p) != os.getpid()]
+        for p in pids:
+            try:
+                os.kill(p, signal.SIGTERM)
+                print(f"🛑 Overlay process {p} stopped.")
+                stopped = True
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+    if os.path.exists(PID_FILE):
+        try:
+            os.remove(PID_FILE)
+        except OSError:
+            pass
+
+    if not stopped:
+        print("ℹ️ Overlay is not running.")
+
+def show_status():
+    pid = get_running_pid()
+    if pid:
+        print(f"🛸 Overlay is ACTIVE (PID {pid}).")
+    else:
+        print("ℹ️ Overlay is INACTIVE.")
+
 # Global list to keep a strong reference to our delegate
-# so it isn't garbage collected by Python.
 _retained_objects = []
 
 def main():
-    print("Starting QuickTranslate...")
+    import signal
+    if len(sys.argv) > 1:
+        arg = sys.argv[1]
+        if arg == "--start":
+            start_background()
+            return
+        elif arg == "--stop":
+            stop_background()
+            return
+        elif arg == "--status":
+            show_status()
+            return
+        elif arg in ("-h", "--help"):
+            print("Usage: overlay [--start | --stop | --status | --daemon]")
+            return
+
+    try:
+        with open(PID_FILE, "w") as f:
+            f.write(str(os.getpid()))
+    except Exception:
+        pass
+
+    print("Starting Overlay HUD...")
     sys.stdout.flush()
     
     app = NSApplication.sharedApplication()
@@ -429,14 +533,10 @@ def main():
     
     delegate = AppDelegate.alloc().init()
     app.setDelegate_(delegate)
-    
-    # Retain the delegate
     _retained_objects.append(delegate)
     
-    # Explicitly start listening and setup
     delegate.setup()
     
-    # Catch Ctrl+C in terminal
     AppHelper.installMachInterrupt()
     AppHelper.runEventLoop()
 

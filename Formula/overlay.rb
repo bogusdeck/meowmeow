@@ -13,11 +13,27 @@ class Overlay < Formula
     virtualenv_install_with_resources
   end
 
+  service do
+    run [opt_bin/"overlay", "--daemon"]
+    keep_alive true
+    error_log_path var/"log/overlay.log"
+    log_path var/"log/overlay.log"
+    process_type :interactive
+  end
+
   def caveats
     <<~EOS
       🛸 Overlay installed successfully!
 
-      Keyboard Shortcut: Cmd + Ctrl + Fn + P (Clipboard translate)
+      Start background service:
+        brew services start overlay
+        # OR
+        overlay --start
+
+      Stop background service:
+        brew services stop overlay
+        # OR
+        overlay --stop
 
       NOTE: Overlay requires macOS Accessibility permissions for global hotkeys.
       Please grant Accessibility access in:
