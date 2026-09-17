@@ -7,10 +7,11 @@ class Overlay < Formula
   depends_on :macos
   depends_on "python@3.11"
 
-  include Language::Python::Virtualenv
-
   def install
-    virtualenv_install_with_resources
+    system "python3.11", "-m", "venv", libexec
+    system libexec/"bin/pip", "install", "--upgrade", "pip", "setuptools", "wheel"
+    system libexec/"bin/pip", "install", "."
+    bin.install_symlink libexec/"bin/overlay"
   end
 
   service do
