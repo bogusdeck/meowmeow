@@ -8,9 +8,9 @@ class Overlay < Formula
   depends_on "python@3.11"
 
   def install
-    system "python3.11", "-m", "venv", libexec
-    system libexec/"bin/pip", "install", "--upgrade", "pip", "setuptools", "wheel"
-    system libexec/"bin/pip", "install", "."
+    system "python3.11", "-m", "venv", "--with-pip", libexec
+    system libexec/"bin/python", "-m", "pip", "install", "--upgrade", "pip", "setuptools", "wheel"
+    system libexec/"bin/python", "-m", "pip", "install", "."
     bin.install_symlink libexec/"bin/overlay"
   end
 
