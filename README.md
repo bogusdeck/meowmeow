@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/pixel_eye.jpg" alt="Overlay Logo" width="220" />
+  <img src="assets/pixel_eye.png" alt="Overlay Logo" width="220" />
 </div>
 
 # Overlay — macOS AI Assistant & Code HUD
