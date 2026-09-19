@@ -1,6 +1,6 @@
-<p align="center">
-  <img src="assets/pixel_eye.jpg" alt="Overlay Pixel Eye Logo" width="180" style="border-radius: 12px;"/>
-</p>
+<div align="center">
+  <img src="assets/pixel_eye.jpg" alt="Overlay Logo" width="220" />
+</div>
 
 # Overlay — macOS AI Assistant & Code HUD
 
