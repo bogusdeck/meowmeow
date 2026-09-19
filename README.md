@@ -1,18 +1,29 @@
-# Overlay — macOS AI Assistant & Code Translator HUD
+# Overlay — macOS AI Assistant & Code HUD
 
-Overlay is a lightweight, floating translucent HUD application for macOS written in Go for instant coding challenge translation and AI technical interview assistance powered by Ollama and Antigravity (`agy -p`).
+Overlay is a lightweight, floating translucent HUD application for macOS written in Go + CGo (AppKit). It provides instant screen OCR capture, clipboard problem solving, rich Markdown syntax highlighting, and dual AI backend routing powered by Ollama and Antigravity (`agy`).
 
-## Features
+---
 
-- **Single Native Binary**: 100% Go & macOS AppKit (CGo). Zero Python/pip runtime dependencies.
-- **Translucent HUD Overlay**: Native macOS AppKit panel with dark visual effects (`NSVisualEffectView`).
-- **Global Hotkey Trigger**: Press `Cmd` + `Ctrl` + `P` (or `Cmd` + `Ctrl` + `Fn` + `P`) to instantly solve code from your clipboard.
-- **Directional Controls & Resizing**: Move window with `Cmd` + `Ctrl` + `Arrows`, resize with `Cmd` + `Ctrl` + `+`/`-`.
-- **Response History Cards**: Switch between past responses using `Cmd` + `Ctrl` + `>` and `Cmd` + `Ctrl` + `<`.
-- **Antigravity Acceleration**: Press `Cmd` + `Ctrl` + `I` to run an instant parallel request with Antigravity CLI.
-- **Dual AI Backend Support**:
-  - Primary: Local or Cloud Ollama API.
-  - Backup/Fallback: Antigravity CLI (`agy -p`).
+## Key Features
+
+- **Automatic Full-Screen Capture & Vision OCR**:
+  - Press `Cmd` + `Ctrl` + `Fn` + `S` (or click `📸`) to silently capture the full main screen.
+  - Text is extracted instantly using Apple's native Vision framework (`VNRecognizeTextRequest`).
+- **Screen-Share Invisibility**:
+  - Window sharing type set to `NSWindowSharingNone` with no window shadow (`hasShadow: NO`) to remain invisible on screen shares and recordings.
+- **Rich Markdown Syntax Highlighting**:
+  - Native syntax highlighting for code blocks (Python, Go, JS/TS, C++, Java, etc.), bold text, headers, bullet points, and inline code capsules.
+- **Live Model Timer & Clean Output**:
+  - Real-time execution timer displaying active model and elapsed time (e.g. `gemini-3.1-pro-high (3s)...`).
+  - Strict negative prompt directives and preamble filters to eliminate conversational filler (e.g. no *"Sure! Let's break down..."*).
+- **Dual AI Provider Routing**:
+  - **Screen Captures**: Antigravity (`agy`) primary $\rightarrow$ Ollama fallback.
+  - **Text / Clipboard Prompts**: Ollama primary $\rightarrow$ Antigravity (`agy`) fallback.
+  - **Instant Acceleration**: `Cmd` + `Ctrl` + `Fn` + `I` forces direct Antigravity execution.
+- **Configurable Leader Keys & Styling (`overlay --config`)**:
+  - Customize leader key combinations, translucency percentage, font style/size, and model defaults saved to `~/.config/overlay/config.json`.
+
+---
 
 ## Installation
 
@@ -38,7 +49,7 @@ overlay --status
 ### Manual Build
 
 #### Prerequisites
-- macOS 12+
+- macOS 12+ (Apple Silicon or Intel)
 - Go 1.20+
 - Ollama and/or Antigravity CLI (`agy`)
 
@@ -50,15 +61,52 @@ go build -o overlay .
 ./overlay --start
 ```
 
-## Hotkeys Quick Reference
+---
 
-| Action | Shortcut |
-|---|---|
-| Translate Clipboard | `Cmd` + `Ctrl` + `P` |
-| Toggle Hide/Show Overlay | `Cmd` + `Ctrl` + `H` or `Cmd` + `Ctrl` + `X` |
-| Accelerate with Antigravity | `Cmd` + `Ctrl` + `I` |
-| Next Response Card | `Cmd` + `Ctrl` + `.` (`>`) |
-| Previous Response Card | `Cmd` + `Ctrl` + `,` (`<`) |
-| Move Window | `Cmd` + `Ctrl` + `Arrows` |
-| Reduce Window Size | `Cmd` + `Ctrl` + `-` |
-| Expand Window Size | `Cmd` + `Ctrl` + `=` |
+## Configuration (`overlay --config`)
+
+Overlay includes a built-in terminal configuration utility:
+
+```bash
+# View active configuration
+overlay --config show
+
+# Set custom leader key (default: ctrl+cmd+fn)
+overlay --config leader "ctrl+cmd+fn"
+
+# Set window translucency / opacity percentage (1-100%)
+overlay --config opacity 85
+
+# Set font family ("Menlo", "SF Mono", "Monaco", "Courier", "system")
+overlay --config font "SF Mono"
+
+# Set font size in points
+overlay --config font-size 12.0
+
+# Set specific Ollama model
+overlay --config model-ollama "qwen2.5-coder"
+
+# Set Antigravity model & effort
+overlay --config model-agy "gemini-3.1-pro-high"
+overlay --config agy-effort "high"
+
+# Reset all settings to default
+overlay --config reset
+```
+
+---
+
+## Hotkeys Quick Reference (Default Leader: `Cmd + Ctrl + Fn`)
+
+| Action | Shortcut | Top Bar Icon |
+|---|---|---|
+| **Full Screen Capture & OCR** | `Leader` + `S` | `📸` Camera |
+| **Translate Clipboard** | `Leader` + `P` | `doc.on.clipboard` Paste |
+| **Toggle Hide / Show Overlay** | `Leader` + `H` | - |
+| **Kill / Stop Overlay Process** | `Leader` + `X` | `xmark.circle.fill` Close |
+| **Accelerate with Antigravity**| `Leader` + `I` | - |
+| **Next Response Card** | `Leader` + `.` (`>`) | `[1/1]` Counter |
+| **Previous Response Card** | `Leader` + `,` (`<`) | `[1/1]` Counter |
+| **Move Window Position** | `Leader` + `Arrows` | - |
+| **Reduce Window Size** | `Leader` + `-` / `M` | - |
+| **Expand Window Size** | `Leader` + `=` / `+` | - |

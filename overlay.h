@@ -8,6 +8,10 @@ extern "C" {
 #endif
 
 void SetupHUDWindow(void);
+void SetLeaderModifiers(bool cmd, bool ctrl, bool fn, bool alt, bool shift);
+bool CheckLeaderModifiers(CGEventFlags flags);
+void SetHUDOpacity(float opacityPercentage);
+void SetHUDFontConfig(const char* fontName, float fontSize);
 void ShowHUDText(const char* text);
 void SetHUDIndexText(const char* text);
 void ToggleHUDVisibility(void);
@@ -15,9 +19,12 @@ void MoveHUDWindow(int dx, int dy);
 void ResizeHUDWindow(int dw, int dh);
 void SetHUDCursorStandard(void);
 void RunAppKitLoop(void);
+void PerformScreenCaptureOCR(void);
 
 void goHotkeyTranslate(void);
+void goHotkeySnapOCR(void);
 void goHotkeyToggleOverlay(void);
+void goHotkeyKillApp(void);
 void goHotkeyInstantAgy(void);
 void goHotkeyNextCard(void);
 void goHotkeyPrevCard(void);

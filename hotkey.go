@@ -1,8 +1,8 @@
 package main
 
 /*
-#cgo CFLAGS: -x objective-c -Wno-deprecated-declarations
-#cgo LDFLAGS: -framework Cocoa -framework CoreGraphics
+#cgo CFLAGS: -x objective-c -Wno-deprecated-declarations -mmacosx-version-min=13.0
+#cgo LDFLAGS: -framework Cocoa -framework CoreGraphics -mmacosx-version-min=13.0
 
 #import <Cocoa/Cocoa.h>
 #include "overlay.h"
@@ -12,18 +12,20 @@ static CFMachPortRef gEventTap = NULL;
 static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEventRef event, void *refcon) {
     if (type == kCGEventKeyDown) {
         CGEventFlags flags = CGEventGetFlags(event);
-        bool isCmd = (flags & kCGEventFlagMaskCommand) != 0;
-        bool isControl = (flags & kCGEventFlagMaskControl) != 0;
-
-        if (isCmd && isControl) {
+        if (CheckLeaderModifiers(flags)) {
             int64_t keycode = CGEventGetIntegerValueField(event, kCGKeyboardEventKeycode);
             switch (keycode) {
                 case 35: // 'p'
                     goHotkeyTranslate();
                     return NULL;
-                case 4: // 'h'
-                case 7: // 'x'
+                case 1: // 's' (Screen Capture & Vision OCR)
+                    goHotkeySnapOCR();
+                    return NULL;
+                case 4: // 'h' (Toggle Hide/Show Overlay)
                     goHotkeyToggleOverlay();
+                    return NULL;
+                case 7: // 'x' (Kill / Stop Overlay Process completely)
+                    goHotkeyKillApp();
                     return NULL;
                 case 34: // 'i'
                     goHotkeyInstantAgy();
@@ -35,15 +37,19 @@ static CGEventRef eventTapCallback(CGEventTapProxy proxy, CGEventType type, CGEv
                     goHotkeyPrevCard();
                     return NULL;
                 case 123: // Left Arrow
+                case 115: // Home (Fn + Left Arrow)
                     goHotkeyMoveLeft();
                     return NULL;
                 case 124: // Right Arrow
+                case 119: // End (Fn + Right Arrow)
                     goHotkeyMoveRight();
                     return NULL;
                 case 126: // Up Arrow
+                case 116: // Page Up (Fn + Up Arrow)
                     goHotkeyMoveUp();
                     return NULL;
                 case 125: // Down Arrow
+                case 121: // Page Down (Fn + Down Arrow)
                     goHotkeyMoveDown();
                     return NULL;
                 case 27: // '-'
@@ -90,9 +96,19 @@ func goHotkeyTranslate() {
 	onTranslateClipboard()
 }
 
+//export goHotkeySnapOCR
+func goHotkeySnapOCR() {
+	C.PerformScreenCaptureOCR()
+}
+
 //export goHotkeyToggleOverlay
 func goHotkeyToggleOverlay() {
 	C.ToggleHUDVisibility()
+}
+
+//export goHotkeyKillApp
+func goHotkeyKillApp() {
+	stopBackground()
 }
 
 //export goHotkeyInstantAgy

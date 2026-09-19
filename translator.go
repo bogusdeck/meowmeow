@@ -18,7 +18,7 @@ var (
 	preferredProvider = getEnvOrDefault("OVERLAY_PROVIDER", "ollama")
 	ollamaURL         = getEnvOrDefault("OLLAMA_URL", "http://localhost:11434/api/generate")
 	ollamaTagsURL     = getEnvOrDefault("OLLAMA_TAGS_URL", "http://localhost:11434/api/tags")
-	ollamaModel       = getEnvOrDefault("OLLAMA_MODEL", "gemini-3.1-pro-high")
+	ollamaModel       = getEnvOrDefault("OLLAMA_MODEL", "ollama")
 	ollamaAPIKey      = os.Getenv("OLLAMA_API_KEY")
 
 	agyModel  = getEnvOrDefault("AGY_MODEL", "gemini-3.1-pro-high")
@@ -26,14 +26,45 @@ var (
 	agyPath   = resolveAgyPath()
 )
 
-const translateTextPrompt = `Here is my coding challenge problem. Act like a candidate in a technical interview.
+const translateTextPrompt = `STRICT DIRECTIVE: Do NOT include any conversational intro, greetings, preamble, or filler text (such as "Sure!", "Here is", "Let's break down", "Certainly", etc.). Start IMMEDIATELY with the solution or code.
 
 Provide:
-1. A simple, clean, and easy-to-understand solution (nothing fancy, use basic code).
-2. A short, clear, and user-friendly explanation as you would explain to an interviewer.
+1. A simple, clean, and easy-to-understand solution (use basic, optimal code).
+2. A short, clear technical explanation (approach, time/space complexity).
 
 Problem:
 %s`
+
+func stripConversationalPreamble(text string) string {
+	lines := strings.Split(text, "\n")
+	startIdx := 0
+	for i, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if trimmed == "" {
+			continue
+		}
+		lower := strings.ToLower(trimmed)
+		if strings.HasPrefix(lower, "sure") ||
+			strings.HasPrefix(lower, "certainly") ||
+			strings.HasPrefix(lower, "here is") ||
+			strings.HasPrefix(lower, "here's") ||
+			strings.HasPrefix(lower, "let's") ||
+			strings.HasPrefix(lower, "below is") ||
+			strings.HasPrefix(lower, "i can help") ||
+			strings.HasPrefix(lower, "of course") ||
+			strings.HasPrefix(lower, "great!") ||
+			strings.HasPrefix(lower, "ok,") ||
+			strings.HasPrefix(lower, "okay,") {
+			continue
+		}
+		startIdx = i
+		break
+	}
+	if startIdx < len(lines) {
+		return strings.TrimSpace(strings.Join(lines[startIdx:], "\n"))
+	}
+	return strings.TrimSpace(text)
+}
 
 func getEnvOrDefault(key, fallback string) string {
 	if val := os.Getenv(key); val != "" {
@@ -174,6 +205,10 @@ func translateWithAntigravity(prompt string) (string, error) {
 }
 
 func translateText(text string, isRawPrompt bool) string {
+	return translateTextWithPrimary(text, isRawPrompt, preferredProvider)
+}
+
+func translateTextWithPrimary(text string, isRawPrompt bool, primaryProvider string) string {
 	prompt := text
 	if !isRawPrompt {
 		prompt = fmt.Sprintf(translateTextPrompt, text)
@@ -185,30 +220,30 @@ func translateText(text string, isRawPrompt bool) string {
 	}
 
 	var providers []provider
-	if preferredProvider == "ollama" {
+	if primaryProvider == "antigravity" {
 		providers = []provider{
-			{"Ollama", translateWithOllama},
 			{"Antigravity", translateWithAntigravity},
+			{"Ollama", translateWithOllama},
 		}
 	} else {
 		providers = []provider{
-			{"Antigravity", translateWithAntigravity},
 			{"Ollama", translateWithOllama},
+			{"Antigravity", translateWithAntigravity},
 		}
 	}
 
 	var lastErr error
 	for _, p := range providers {
-		log.Printf("Attempting request using %s...", p.name)
-		result, err := p.fn(prompt)
-		if err == nil {
-			return result
+		log.Printf("Attempting solution via provider: %s", p.name)
+		res, err := p.fn(prompt)
+		if err == nil && res != "" {
+			return stripConversationalPreamble(res)
 		}
-		log.Printf("%s failed: %v. Trying fallback...", p.name, err)
+		log.Printf("Provider %s failed: %v", p.name, err)
 		lastErr = err
 	}
 
-	return fmt.Sprintf("Execution failed on all available providers. Error: %v", lastErr)
+	return fmt.Sprintf("Error generating response: %v", lastErr)
 }
 
 func askAntigravity(question string) string {
@@ -216,5 +251,15 @@ func askAntigravity(question string) string {
 	if err != nil {
 		return fmt.Sprintf("Antigravity error: %v", err)
 	}
-	return result
+	return stripConversationalPreamble(result)
+}
+
+func getModelNameForProvider(provider string) string {
+	if provider == "antigravity" {
+		if agyModel != "" {
+			return agyModel
+		}
+		return "gemini-3.1-pro-high"
+	}
+	return getAvailableOllamaModel()
 }
