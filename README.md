@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/pixel_eye.jpg" alt="Overlay Pixel Eye Logo" width="180" style="border-radius: 12px;"/>
+</p>
+
 # Overlay — macOS AI Assistant & Code HUD
 
 Overlay is a lightweight, floating translucent HUD application for macOS written in Go + CGo (AppKit). It provides instant screen OCR capture, clipboard problem solving, rich Markdown syntax highlighting, and dual AI backend routing powered by Ollama and Antigravity (`agy`).
